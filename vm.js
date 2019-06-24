@@ -6,17 +6,67 @@ let vm = new Vue({
 		arrayOfGames: []
 	},
 	methods: {
-		setArrayOfGames: function () {
+		setArrayOfGames: function() {
 			let url = "webService.php";
 			let setValue = function(response) {
 				vm.arrayOfGames = response.data;
 			};
-			axios.get(url).then(setValue);
+
+			//---------------------------------------------------------------
+			let xhr;
+			try {
+				xhr = new ActiveXObject("Microsoft.XMLHTTP"); // Essayer IE
+			} catch (
+				e // Echec, utiliser l'objet standard
+			) {
+				xhr = new XMLHttpRequest();
+			}
+			xhr.onreadystatechange = function() {
+				// instructions de traitement de la réponse
+				if (xhr.readyState == 4) {
+					console.log(xhr.response);
+					vm.arrayOfGames = xhr.response;
+				} else {
+					// Attendre...
+				}
+			};
+			xhr.open("GET", url, true);
+			xhr.send(null);
+			//---------------------------------------------------------------
+
+			//---------------------------------------------------------------
+			// axios.get(url).then(setValue);
+			//---------------------------------------------------------------
 		},
 		deleteGame: function (event) {
 			let game = event.target.value;
 			let url = "delete.php";
-			axios.post(url, game).then(this.setArrayOfGames);
+
+			//---------------------------------------------------------------
+			let xhr;
+			try {
+				xhr = new ActiveXObject("Microsoft.XMLHTTP"); // Essayer IE
+			} catch (
+				e // Echec, utiliser l'objet standard
+			) {
+				xhr = new XMLHttpRequest();
+			}
+			xhr.onreadystatechange = function() {
+				// instructions de traitement de la réponse
+				if (xhr.readyState == 4) {
+					vm.setArrayOfGames();
+				} else {
+					// Attendre...
+				}
+			};
+			xhr.open("POST", url, true);
+			xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+			xhr.send(game);
+			//---------------------------------------------------------------
+
+			//---------------------------------------------------------------
+			// axios.post(url, game).then(this.setArrayOfGames);
+			//---------------------------------------------------------------
 		}
 	},
 	mounted() {

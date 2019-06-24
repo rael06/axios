@@ -1,7 +1,3 @@
-<?php
-require "Database.php";
-$games = Database::db_query("SELECT Title FROM videogames");
-?>
 <!DOCTYPE html>
 <html lang="en">
 
