@@ -8,10 +8,9 @@ let vm = new Vue({
 	methods: {
 		setArrayOfGames: function() {
 			let url = "webService.php";
-			let setValue = function(response) {
-				vm.arrayOfGames = response.data;
+			let setValue = function (response) {
+				vm.arrayOfGames = response.data || JSON.parse(response);
 			};
-
 			//---------------------------------------------------------------
 			let xhr;
 			try {
@@ -24,8 +23,7 @@ let vm = new Vue({
 			xhr.onreadystatechange = function() {
 				// instructions de traitement de la réponse
 				if (xhr.readyState == 4) {
-					console.log(xhr.response);
-					vm.arrayOfGames = xhr.response;
+					setValue(xhr.response);
 				} else {
 					// Attendre...
 				}
@@ -39,10 +37,11 @@ let vm = new Vue({
 			//---------------------------------------------------------------
 		},
 		deleteGame: function (event) {
+			this.tableLoading();
 			let game = event.target.value;
 			let url = "delete.php";
 
-			//---------------------------------------------------------------
+			//--------------------------------------------------------------- AJAX
 			let xhr;
 			try {
 				xhr = new ActiveXObject("Microsoft.XMLHTTP"); // Essayer IE
@@ -55,6 +54,7 @@ let vm = new Vue({
 				// instructions de traitement de la réponse
 				if (xhr.readyState == 4) {
 					vm.setArrayOfGames();
+					setTimeout(vm.tableLoading, 2000);
 				} else {
 					// Attendre...
 				}
@@ -64,12 +64,31 @@ let vm = new Vue({
 			xhr.send(game);
 			//---------------------------------------------------------------
 
+			//--------------------------------------------------------------- AXIOS
+			/* axios.post(url, game).then(this.setArrayOfGames)
+
+			.then(this.tableLoading).then(setTimeout(this.tableLoading, 2000)); */
 			//---------------------------------------------------------------
-			// axios.post(url, game).then(this.setArrayOfGames);
-			//---------------------------------------------------------------
+		},
+		loader: function () {
+			document.getElementById("vm").classList.remove("hide");
+			document.getElementById("vm").classList.add("show");
+		},
+		loading: function () {
+			document.querySelectorAll(".box h1").forEach(element => element.classList.toggle("hide"));
+			document.querySelectorAll(".box img").forEach(element => element.classList.toggle("hide"));
+		},
+		tableLoading: function () {
+			document.querySelector(".main_table").classList.toggle("hide");
+			document.querySelector(".scroller img").classList.toggle("hide");
 		}
 	},
 	mounted() {
 		this.setArrayOfGames();
+		this.loader();
+		setTimeout(function () {
+			vm.loading();
+			vm.tableLoading();
+		}, 2000);
 	}
 });
