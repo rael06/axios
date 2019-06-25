@@ -17,11 +17,6 @@ section {
 	grid-template-rows: 50vh 50vh;
 }
 
-.refresh_button {
-	width: 25%;
-	justify-self: center;
-}
-
 .box1 {
 	grid-area: box1;
 }
